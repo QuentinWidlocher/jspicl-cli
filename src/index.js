@@ -1,11 +1,11 @@
-import { defaultOptions } from "./constants";
-import { generateCartridgeContent, getCartridgeSections } from "./cartridge";
-import { logStats, logToFile, logSuccess, logInfo } from "./logging";
-import { getSpritesheetFromImage } from "./spritesheet";
-import { createPico8Launcher } from "./pico8-launcher";
-import { transpile } from "./transpile";
+import { defaultOptions } from "./constants.js";
+import { generateCartridgeContent, getCartridgeSections } from "./cartridge.js";
+import { logStats, logToFile, logSuccess, logInfo } from "./logging.js";
+import { getSpritesheetFromImage } from "./spritesheet.js";
+import { createPico8Launcher } from "./pico8-launcher.js";
+import { transpile } from "./transpile.js";
 
-export default function plugin (customizedOptions) {
+export default function plugin(customizedOptions) {
   const options = {
     ...defaultOptions,
     ...customizedOptions
@@ -25,7 +25,7 @@ export default function plugin (customizedOptions) {
   return {
     name: "jspicl",
 
-    buildStart () {
+    buildStart() {
       if (runOnce) {
         options.watch && logSuccess("Watching source files for changes");
         logSuccess("Building cartridge");
@@ -35,7 +35,7 @@ export default function plugin (customizedOptions) {
       this.addWatchFile(options.spritesheetImagePath);
     },
 
-    async renderChunk (javascriptCode) {
+    async renderChunk(javascriptCode) {
       const {
         cartridgePath,
         jsOutput,
@@ -64,12 +64,12 @@ export default function plugin (customizedOptions) {
       };
     },
 
-    watchChange () {
+    watchChange() {
       console.clear();
       logSuccess("Change detected, rebuilding cartridge");
     },
 
-    generateBundle ({ file }) {
+    generateBundle({ file }) {
       runPico(file);
       options.watch && console.log("\nPress Ctrl+C to stop watching");
     }

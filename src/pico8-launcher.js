@@ -1,6 +1,10 @@
 import path from "path";
+import { fileURLToPath } from "url"
 import { spawn, exec } from "child_process";
-import { logSuccess, logWarning } from "./logging";
+import { logSuccess, logWarning } from "./logging.js";
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const pico8PathMap = {
   win32: `"C:\\Program Files (x86)\\PICO-8\\pico8.exe"`, // eslint-disable-line quotes
@@ -8,7 +12,7 @@ const pico8PathMap = {
   linux: "~/pico-8/pico8"
 };
 
-export function createPico8Launcher ({ watch, customPicoPath, reloadOnSave, pipeOutputToConsole }) {
+export function createPico8Launcher({ watch, customPicoPath, reloadOnSave, pipeOutputToConsole }) {
   let picoProcess = null;
 
   return cartridgePath => {

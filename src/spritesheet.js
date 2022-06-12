@@ -1,6 +1,6 @@
 import fs from "fs";
 import pngjs from "pngjs";
-import { pico8Palette } from "./constants";
+import { pico8Palette } from "./constants.js";
 
 const spritesheetWidth = 128;
 const spritesheetHeight = 128;
@@ -29,7 +29,7 @@ const toClosestColor = pixels => (unused, offset) => {
   return closestPaletteColor.toString(hexBase);
 };
 
-export function getSpritesheetFromImage (imagePath) {
+export function getSpritesheetFromImage(imagePath) {
   if (!imagePath) {
     throw new Error("Image path is missing");
   }

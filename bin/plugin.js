@@ -1,13 +1,9 @@
-'use strict';
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var fs = _interopDefault(require('fs'));
-var path = _interopDefault(require('path'));
-var mkdirp = _interopDefault(require('mkdirp'));
-var pngjs = _interopDefault(require('pngjs'));
-var child_process = require('child_process');
-var jspicl = _interopDefault(require('jspicl'));
+import fs from 'fs';
+import path from 'path';
+import mkdirp from 'mkdirp';
+import pngjs from 'pngjs';
+import { spawn, exec } from 'child_process';
+import jspicl from 'jspicl';
 
 const banner = `--[[
 generated with jspicl,
@@ -118,7 +114,7 @@ const pico8Palette = [
   }
 ];
 
-function generateCartridgeContent ({
+function generateCartridgeContent({
   lua = "",
   gff,
   gfx,
@@ -139,7 +135,7 @@ function generateCartridgeContent ({
   ].join("\n");
 }
 
-function getCartridgeSections (cartridgePath) {
+function getCartridgeSections(cartridgePath) {
   const contents = fs.readFileSync(path.resolve(cartridgePath), "utf8");
 
   const cartridgeSections = {};
@@ -187,7 +183,7 @@ const tokens = [
 
 const regex = new RegExp(`(${tokens})`, "gi");
 
-function tokenCounter (luaCode) {
+function tokenCounter(luaCode) {
   return (luaCode.match(regex) || [])
     .filter(token => token !== "local" && token !== "end")
     .length;
@@ -200,28 +196,28 @@ const ICONS = {
   error: "\x1b[31m✖"
 };
 
-function logToFile (content, filePath) {
+function logToFile(content, filePath) {
   mkdirp.sync(path.dirname(filePath));
   fs.writeFileSync(path.resolve(filePath), content);
 }
 
-function logInfo (content) {
+function logInfo(content) {
   logToConsole(ICONS.info, content);
 }
 
-function logSuccess (content) {
+function logSuccess(content) {
   logToConsole(ICONS.success, content);
 }
 
-function logWarning (content) {
+function logWarning(content) {
   logToConsole(ICONS.warning, content);
 }
 
-function logToConsole (icon, content) {
+function logToConsole(icon, content) {
   console.log(`${icon} ${content}\x1b[0m`);
 }
 
-function logStats (lua, polyfillOutput, code) {
+function logStats(lua, polyfillOutput, code) {
   const tokens = tokenCounter(lua);
   const polyfillTokens = tokenCounter(polyfillOutput);
 
@@ -284,7 +280,7 @@ const toClosestColor = pixels => (unused, offset) => {
   return closestPaletteColor.toString(hexBase);
 };
 
-function getSpritesheetFromImage (imagePath) {
+function getSpritesheetFromImage(imagePath) {
   if (!imagePath) {
     throw new Error("Image path is missing");
   }
@@ -316,7 +312,7 @@ const pico8PathMap = {
   linux: "~/pico-8/pico8"
 };
 
-function createPico8Launcher ({ watch, customPicoPath, reloadOnSave, pipeOutputToConsole }) {
+function createPico8Launcher({ watch, customPicoPath, reloadOnSave, pipeOutputToConsole }) {
   let picoProcess = null;
 
   return cartridgePath => {
@@ -332,7 +328,7 @@ function createPico8Launcher ({ watch, customPicoPath, reloadOnSave, pipeOutputT
       if (process.platform === "darwin") {
         // Currently only MacOS supports auto reloading when saving.
         logSuccess("Reloading cartridge in PICO-8");
-        child_process.exec(`osascript "${path.join(__dirname, "reload-pico8.applescript")}"`);
+        exec(`osascript "${path.join(__dirname, "reload-pico8.applescript")}"`);
       }
       else {
         logWarning("Autoreloading is currently only supported on MacOS. Please press Ctrl+R in PICO-8 to see new changes.");
@@ -343,7 +339,7 @@ function createPico8Launcher ({ watch, customPicoPath, reloadOnSave, pipeOutputT
       // Use customized path if available, otherwise fallback to the default one for the current OS
       const picoPath = customPicoPath || pico8PathMap[process.platform];
 
-      picoProcess = child_process.spawn(picoPath, ["-run", `"${path.resolve(cartridgePath)}"`], {
+      picoProcess = spawn(picoPath, ["-run", `"${path.resolve(cartridgePath)}"`], {
         shell: true,
         stdio: pipeOutputToConsole ? "inherit" : "pipe"
       });
@@ -356,7 +352,7 @@ function createPico8Launcher ({ watch, customPicoPath, reloadOnSave, pipeOutputT
   };
 }
 
-function transpile (javascriptCode, options) {
+function transpile(javascriptCode, options) {
   const { includeBanner, polyfillTransform, jspicl: jspiclOptions = {} } = options;
   const jspiclBanner = includeBanner && `${banner}` || "";
 
@@ -367,13 +363,13 @@ function transpile (javascriptCode, options) {
   return {
     lua,
     polyfillOutput,
-    toString () {
+    toString() {
       return `${jspiclBanner}${lua}`;
     }
   };
 }
 
-function plugin (customizedOptions) {
+function plugin(customizedOptions) {
   const options = {
     ...defaultOptions,
     ...customizedOptions
@@ -393,7 +389,7 @@ function plugin (customizedOptions) {
   return {
     name: "jspicl",
 
-    buildStart () {
+    buildStart() {
       if (runOnce) {
         options.watch && logSuccess("Watching source files for changes");
         logSuccess("Building cartridge");
@@ -403,7 +399,7 @@ function plugin (customizedOptions) {
       this.addWatchFile(options.spritesheetImagePath);
     },
 
-    async renderChunk (javascriptCode) {
+    async renderChunk(javascriptCode) {
       const {
         cartridgePath,
         jsOutput,
@@ -432,16 +428,16 @@ function plugin (customizedOptions) {
       };
     },
 
-    watchChange () {
+    watchChange() {
       console.clear();
       logSuccess("Change detected, rebuilding cartridge");
     },
 
-    generateBundle ({ file }) {
+    generateBundle({ file }) {
       runPico(file);
       options.watch && console.log("\nPress Ctrl+C to stop watching");
     }
   };
 }
 
-module.exports = plugin;
+export default plugin;

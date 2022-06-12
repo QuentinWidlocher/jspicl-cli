@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import mkdirp from "mkdirp";
-import { tokenCounter } from "./token-counter";
+import { tokenCounter } from "./token-counter.js";
 
 const ICONS = {
   info: "\x1b[34mℹ",
@@ -10,32 +10,32 @@ const ICONS = {
   error: "\x1b[31m✖"
 };
 
-export function logToFile (content, filePath) {
+export function logToFile(content, filePath) {
   mkdirp.sync(path.dirname(filePath));
   fs.writeFileSync(path.resolve(filePath), content);
 }
 
-export function logInfo (content) {
+export function logInfo(content) {
   logToConsole(ICONS.info, content);
 }
 
-export function logSuccess (content) {
+export function logSuccess(content) {
   logToConsole(ICONS.success, content);
 }
 
-export function logWarning (content) {
+export function logWarning(content) {
   logToConsole(ICONS.warning, content);
 }
 
-export function logError (content) {
+export function logError(content) {
   logToConsole(ICONS.error, content);
 }
 
-function logToConsole (icon, content) {
+function logToConsole(icon, content) {
   console.log(`${icon} ${content}\x1b[0m`);
 }
 
-export function logStats (lua, polyfillOutput, code) {
+export function logStats(lua, polyfillOutput, code) {
   const tokens = tokenCounter(lua);
   const polyfillTokens = tokenCounter(polyfillOutput);
 

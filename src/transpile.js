@@ -1,7 +1,7 @@
 import jspicl from "jspicl";
-import { banner } from "./constants";
+import { banner } from "./constants.js";
 
-export function transpile (javascriptCode, options) {
+export function transpile(javascriptCode, options) {
   const { includeBanner, polyfillTransform, jspicl: jspiclOptions = {} } = options;
   const jspiclBanner = includeBanner && `${banner}` || "";
 
@@ -12,7 +12,7 @@ export function transpile (javascriptCode, options) {
   return {
     lua,
     polyfillOutput,
-    toString () {
+    toString() {
       return `${jspiclBanner}${lua}`;
     }
   };

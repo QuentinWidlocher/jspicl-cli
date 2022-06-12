@@ -10,6 +10,6 @@ export default {
   ],
   output: {
     file: "bin/plugin.js",
-    format: "cjs"
+    format: "esm"
   }
 };

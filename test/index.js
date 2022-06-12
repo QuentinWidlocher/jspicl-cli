@@ -1,7 +1,12 @@
 import { expect } from "chai";
 import fs from "fs";
-import plugin from "index";
-import { defaultOptions } from "constants";
+import path from "path";
+import { fileURLToPath } from "url"
+import plugin from "../src/index.js";
+import { defaultOptions } from "../src/constants.js";
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const defaultUnitTestOptions = {
   ...defaultOptions,

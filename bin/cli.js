@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-const buble = require("rollup-plugin-buble");
-const includePaths = require("rollup-plugin-includepaths");
-const path = require("path");
-const yargs = require("yargs");
-const rollup = require("rollup");
-const jspiclPlugin = require("./plugin.js");
+import buble from "rollup-plugin-buble";
+import includePaths from "rollup-plugin-includepaths";
+import { basename, extname, resolve, join, dirname } from "path";
+import yargs from "yargs";
+import { watch as _watch, rollup as _rollup } from "rollup";
+import jspiclPlugin from "./plugin.js";
 
 const options = {
   input: {
@@ -70,8 +70,7 @@ const options = {
   // }
 };
 
-const config = yargs
-  .option(options)
+const config = yargs.option(options)
   .strict()
   .help(false)
   .version(false)
@@ -79,25 +78,27 @@ const config = yargs
   .argv;
 
 if (config.jsOutput && typeof config.jsOutput === "boolean") {
-  const filename = path.basename(config.output, path.extname(config.output));
-  config.jsOutput = path.resolve(path.join(path.dirname(config.output), `${filename}.js`));
+  const filename = basename(config.output, extname(config.output));
+  config.jsOutput = resolve(join(dirname(config.output), `${filename}.js`));
 }
 
 if (config.luaOutput && typeof config.luaOutput === "boolean") {
-  const filename = path.basename(config.output, path.extname(config.output));
-  config.luaOutput = path.resolve(path.join(path.dirname(config.output), `${filename}.lua`));
+  const filename = basename(config.output, extname(config.output));
+  config.luaOutput = resolve(join(dirname(config.output), `${filename}.lua`));
 }
 
-// console.dir(config);
-
-function getInputOptions ({ input, output, ...jspiclOptions }) {
+function getInputOptions({ input, output, ...jspiclOptions }) {
   return {
     input,
     plugins: [
       includePaths({
-        paths: [path.resolve(input)]
+        paths: [resolve(input)]
       }),
-      buble(),
+      buble({
+        transforms: {
+          classes: false,
+        }
+      }),
       {
         renderChunk: source => source.replace(/\/\/ <!-- DEBUG[^//]*\/\/\s-->/g, "")
       },
@@ -106,7 +107,7 @@ function getInputOptions ({ input, output, ...jspiclOptions }) {
   };
 }
 
-function getOutputOptions ({ output }) {
+function getOutputOptions({ output }) {
   return {
     file: output,
     format: "esm",
@@ -114,7 +115,7 @@ function getOutputOptions ({ output }) {
   };
 }
 
-function getWatchOptions (config) {
+function getWatchOptions(config) {
   return {
     ...getInputOptions(config),
     output: [getOutputOptions(config)],
@@ -126,14 +127,14 @@ function getWatchOptions (config) {
   };
 }
 
-(async function build () {
+(async function build() {
   try {
     if (config.watch) {
       console.clear();
-      rollup.watch(getWatchOptions(config));
+      _watch(getWatchOptions(config));
     }
     else {
-      const bundle = await rollup.rollup(getInputOptions(config));
+      const bundle = await _rollup(getInputOptions(config));
       await bundle.write(getOutputOptions(config));
     }
   }
