@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import buble from "rollup-plugin-buble";
+import buble from "@rollup/plugin-buble";
 import includePaths from "rollup-plugin-includepaths";
 import { basename, extname, resolve, join, dirname } from "path";
 import yargs from "yargs";
