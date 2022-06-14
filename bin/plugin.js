@@ -114,7 +114,7 @@ const pico8Palette = [
   }
 ];
 
-function generateCartridgeContent({
+function generateCartridgeContent ({
   lua = "",
   gff,
   gfx,
@@ -135,7 +135,7 @@ function generateCartridgeContent({
   ].join("\n");
 }
 
-function getCartridgeSections(cartridgePath) {
+function getCartridgeSections (cartridgePath) {
   const contents = fs.readFileSync(path.resolve(cartridgePath), "utf8");
 
   const cartridgeSections = {};
@@ -183,7 +183,7 @@ const tokens = [
 
 const regex = new RegExp(`(${tokens})`, "gi");
 
-function tokenCounter(luaCode) {
+function tokenCounter (luaCode) {
   return (luaCode.match(regex) || [])
     .filter(token => token !== "local" && token !== "end")
     .length;
