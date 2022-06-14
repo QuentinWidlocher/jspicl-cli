@@ -1,6 +1,6 @@
 {
   "name": "@quentin_widlocher/jspicl-cli",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "CLI for simplifying PICO-8 game development in JavaScript",
   "scripts": {
     "prepublishOnly": "pnpm test && pnpm start",
